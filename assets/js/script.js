@@ -10,7 +10,7 @@ button.addEventListener('click', function(){
   const inputValue = document.querySelector('.inputValue').value
   const geoURL = `http://api.openweathermap.org/geo/1.0/direct?q=${inputValue}&limit=1&appid=fd9ef7dbe0229fd31347b03516a3d415`
   fetch(geoURL)
-  // fetch('https://api.openweathermap.org/data/2.5/forecast?q='+inputValue.value+'&appid=fd9ef7dbe0229fd31347b03516a3d415')
+
   .then(function (response) {
     if (response.status === 404) {
       responseText.textContent = 'Result not found'

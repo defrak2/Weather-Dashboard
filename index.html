@@ -7,18 +7,38 @@
   <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 <body>
+  <header>
+    <h1>Weather Dashboard</h1>
+  </header>
+  <div class="dashboard">
+    <div class="left-column">
+      <h2>Search for a City:</h2>
+      <div class="input">
+        <form>
+          <input type= "text" class = "inputValue" placeholder="San Diego">
+          <input type="submit" value="Search" class="button">
+        </form>
+      </div>
 
-  <div class="input">
-    <input type= "text" class = "inputValue" placeholder="Enter a city">
-    <input type="submit" value="Submit" class="button">
-  </div>
+      <div class = "display-results">
+        <button class="result-button">ATLANTA</button>
+        <button class="result-button">ATLANTA</button>
+        <button class="result-button">ATLANTA</button>
+        <button class="result-button">ATLANTA</button>
 
-  <div class = "display">
-    <h1 class="city"></h1>
-    <p class= "desc"></p>
-    <p class="temp"></p>
-  </div>
-  <!-- //create header
+      </div>
+    </div>
+    <div class="right-column">
+      <div class = "display-today">
+        <h4>TODAY</h4>
+      </div>
+        <div class= "dispaly-forecast">
+          <h4>FORECAST</h4>
+        </div>
+
+    </div>
+</div>
+  <!-- 
   //create two columns
   //column 1: has a form and history of search results below
   //column 2: has the selected city and todays details of weather and below a list of the next 5 days -->
