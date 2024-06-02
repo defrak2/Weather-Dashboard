@@ -10,29 +10,28 @@
   <header>
     <h1>Weather Dashboard</h1>
   </header>
-  <div class="dashboard">
+  <div class="dashboard row">
     <div class="left-column">
       <h2>Search for a City:</h2>
       <div class="input">
-        <form>
+        <form class="form">
           <input type= "text" class = "inputValue" placeholder="San Diego">
-          <input type="submit" value="Search" class="button">
+          <button class="button" id="search-btn">Search</button>
         </form>
+        <h5 class="error"></h2>
       </div>
 
       <div class = "display-results">
         <button class="result-button">ATLANTA</button>
-        <button class="result-button">ATLANTA</button>
-        <button class="result-button">ATLANTA</button>
-        <button class="result-button">ATLANTA</button>
+        <ul id="search-history"></ul>
 
       </div>
     </div>
     <div class="right-column">
-      <div class = "display-today">
+      <div id = "display-today">
         <h4>TODAY</h4>
       </div>
-        <div class= "dispaly-forecast">
+        <div id= "dispaly-forecast">
           <h4>FORECAST</h4>
         </div>
 
