@@ -1,4 +1,5 @@
 const button = document.querySelector('#search-btn')
+const todayBox = document.querySelector('#today-content');
 const errorText = document.querySelector('.error')
 
 const currentWeatherDiv = document.querySelector('#display-today')
@@ -46,7 +47,14 @@ function fetchWeatherData() {
       .then(response => response.json())
       .then(data => {    
         console.log(data);
-
+        if (!data || !data.results || data.results.length === 0) {
+          console.log('No Results returned!')
+          return;
+      }
+      createTodayCard();
+      data.results.forEach(function(answer) {
+          createForecastCards(answer);
+      })
       })
   }
 function saveToLocalStorage () {
@@ -55,8 +63,32 @@ function saveToLocalStorage () {
 function readFromLocalStorage() {
   //at ready
 }
-function createTodayCard() {
+function createTodayCard(resultItem) {
+  const todayCard = document.createElement('div');
+  todayCard.classList.add('today-card');
 
+  const todayCity = document.createElement('h3');
+  todayCity.textContent = resultItem.city.name ;
+  //add date here too as well as emoji for sun/cloud/rain
+
+  todayCard.append(todayCity);
+
+  const todayTemp = document.createElement('p');
+  todayTemp.textContent = resultItem.list.main.temp_max;
+
+  const todayWind = document.createElement('p');
+  todayWind.textContent = resultItem.list.wind.speed;
+
+  const todayHumidity = document.createElement('p');
+  todayHumidity.textContent = resultItem.list.main.humidity;
+
+  todayWind.append(todayHumidity);
+
+  todayTemp.append(todayWind);
+
+  todayCard.append(todayTemp);
+
+  todayBox.append(todayCard);
 }
 function createForecastCards() {
 
