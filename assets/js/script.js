@@ -1,6 +1,7 @@
 const button = document.querySelector('#search-btn')
 const todayBox = document.querySelector('#today-content')
 const forecastBox = document.querySelector('#forecast-content')
+
 const errorText = document.querySelector('.error')
 
 
@@ -13,15 +14,18 @@ button.addEventListener('click', function(event){
   event.preventDefault();
   const inputValue = document.querySelector('.inputValue');
   const city = inputValue.value;
+  
   fetchWeatherData(city);
   saveToLocalStorage(city);
+  renderFromLocalStorage();
 });
 
 
 
 function fetchWeatherData(city) {
-  // const inputValue = document.querySelector('.inputValue');
-  // const city = inputValue.value;
+  todayBox.innerHTML = '';
+  forecastBox.innerHTML = '';
+
   const geoURL = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=fd9ef7dbe0229fd31347b03516a3d415`;
 
 
@@ -62,28 +66,42 @@ function saveToLocalStorage (city) {
 cities.push(city);
 localStorage.setItem('cities', JSON.stringify(cities));
 }
+
+
 function renderFromLocalStorage() {
-  // const searchHistoryList = document.querySelector('#search-history');
+
   const cities = JSON.parse(localStorage.getItem('cities')) || [];
+
+  searchHistoryList.innerHTML = ''
+
+
   cities.forEach((city) => {
     const cityButton= document.createElement('button');
+
     cityButton.textContent = city;
+    cityButton.classList.add('city-button');
     cityButton.addEventListener('click', (event) => {
       event.preventDefault();
+
+      
+
       fetchWeatherData(city);
     });
+
+    // const existingButton = searchHistoryList.querySelector(`button[data]city="${city}"]`);
+    // if (!existingButton) {
+    //   cityButton.setAttribute('data-city', city);
+    // }
     if (!city) {
       console.log('error');
     } else {
+      
+
           searchHistoryList.appendChild(cityButton);
-    }
+ 
 
-    // cityButton.addEventListener('click', (event) => {
-    //   event.preventDefault();
-    //   fetchWeatherData(city);
-    // });
+};
   });
-
 }
 function createTodayCard(data) {
   const todayBox = document.querySelector('.today-box');
@@ -112,17 +130,27 @@ function createTodayCard(data) {
   todayCard.classList.add('today-card');
   todayBox.appendChild(todayCard);
   const todayCity = document.createElement('h3');
-  todayCity.textContent = data.city.name + data.list[0].dt_txt + emojiSymbol;
+
+  const dateString = data.list[0].dt_txt;
+  const dateOnly = dateString.match(/\d{4}-\d{2}-\d{2}/)[0];
+  const dateObj = new Date (dateOnly);
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const month = monthNames[dateObj.getMonth()];
+  const day = dateObj.getDate();
+
+  const formattedDate = `${month} ${day}`;
+
+  todayCity.textContent = `${data.city.name} (${formattedDate}) ${emojiSymbol}`;
 
 
   todayCard.append(todayCity);
 
   const todayTemp = document.createElement('p');
-  todayTemp.textContent= `Temp: ${data.list[0].main.temp_max}°F`;
+  todayTemp.textContent= `Temp: ${Math.floor(data.list[0].main.temp_max)}°F`;
 
 
   const todayWind = document.createElement('p');
-  todayWind.textContent = `Wind: ${data.list[0].wind.speed} mph`;
+  todayWind.textContent = `Wind: ${Math.floor(data.list[0].wind.speed)} mph`;
 
   const todayHumidity = document.createElement('p');
   todayHumidity.textContent = `Humidity: ${data.list[0].main.humidity} %`;
@@ -173,19 +201,28 @@ function createForecastCards(data) {
       }
 
     const forecastDescription = document.createElement('h5');
-    forecastDescription.textContent = data.list[i].dt_txt+emojiSymbol;
+    const dateString = data.list[i].dt_txt;
+    const dateOnly = dateString.match(/\d{4}-\d{2}-\d{2}/)[0];
+    const dateObj = new Date (dateOnly);
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const month = monthNames[dateObj.getMonth()];
+    const day = dateObj.getDate();
+
+    const formattedDate = `${month} ${day}`;
+
+    forecastDescription.textContent = `${formattedDate} ${emojiSymbol}`;
 
    forecastBox.appendChild(forecastCard);
-    forecastCard.append(forecastDescription);
+    forecastCard.appendChild(forecastDescription);
   
     const forecastTemp = document.createElement('p');
-    forecastTemp.textContent= 'Temp:' + data.list[i].main.temp;
+    forecastTemp.textContent= `Temp: ${Math.floor(data.list[0].main.temp_max)}°F`;
   
     const forecastWind = document.createElement('p');
-    forecastWind.textContent = 'Wind:' + data.list[i].wind.speed;
+    forecastWind.textContent = `Wind: ${Math.floor(data.list[0].wind.speed)} mph`;
   
     const forecastHumidity = document.createElement('p');
-    forecastHumidity.textContent = 'Humidity:' + data.list[i].main.humidity;
+    forecastHumidity.textContent = `Humidity: ${data.list[0].main.humidity} %`;
   
     forecastCard.appendChild(forecastTemp);
     forecastCard.appendChild(forecastWind);
@@ -194,30 +231,16 @@ function createForecastCards(data) {
 
 
 
-    forecastBox.appendChild(forecastCard);
   }
-  
 }
 
 
 
-// function createCityButtons() {
-//   const searchCity = document.createElement('button');
-//  //city name here
-// }
 
 
 window.addEventListener('load', renderFromLocalStorage);
 
-renderFromLocalStorage();
-saveToLocalStorage();
-//1. fetch data from API
-//2. save data items to local storage
-//3. read data items from local storage
-//4. create card for today forecast and append to html
-//5. create cards for 5 day forecast and append to html
-//6. function to render the list
-// 7. ready function
+
 
 
 
