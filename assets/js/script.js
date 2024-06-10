@@ -11,14 +11,17 @@ let searchHistory = []
 
 button.addEventListener('click', function(event){
   event.preventDefault();
-  fetchWeatherData();
+  const inputValue = document.querySelector('.inputValue');
+  const city = inputValue.value;
+  fetchWeatherData(city);
+  saveToLocalStorage(city);
 });
 
 
 
-function fetchWeatherData() {
-  const inputValue = document.querySelector('.inputValue');
-  const city = inputValue.value;
+function fetchWeatherData(city) {
+  // const inputValue = document.querySelector('.inputValue');
+  // const city = inputValue.value;
   const geoURL = `https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=fd9ef7dbe0229fd31347b03516a3d415`;
 
 
@@ -47,12 +50,11 @@ function fetchWeatherData() {
       .then(response => response.json())
       .then(data => {    
         console.log(data);
-
-
         createTodayCard(data);
-      createForecastCards(data);
-
-
+       createForecastCards(data);
+      })
+      .catch(error => {
+        console.log('Error fetching forecast data:', error);
       })
   }
 function saveToLocalStorage (city) {
@@ -61,18 +63,25 @@ cities.push(city);
 localStorage.setItem('cities', JSON.stringify(cities));
 }
 function renderFromLocalStorage() {
-  const searchHistoryList = document.querySelector('#search-history');
+  // const searchHistoryList = document.querySelector('#search-history');
   const cities = JSON.parse(localStorage.getItem('cities')) || [];
   cities.forEach((city) => {
     const cityButton= document.createElement('button');
     cityButton.textContent = city;
-    cityButton.addEventListener('click', () => {
+    cityButton.addEventListener('click', (event) => {
+      event.preventDefault();
       fetchWeatherData(city);
     });
-    searchHistoryList.appendChild(cityButton);
-    cityButton.addEventListener('click', () => {
-      fetchWeatherData(city);
-    });
+    if (!city) {
+      console.log('error');
+    } else {
+          searchHistoryList.appendChild(cityButton);
+    }
+
+    // cityButton.addEventListener('click', (event) => {
+    //   event.preventDefault();
+    //   fetchWeatherData(city);
+    // });
   });
 
 }
@@ -192,13 +201,13 @@ function createForecastCards(data) {
 
 
 
-function createCityButtons() {
-  const searchCity = document.createElement('button');
- //city name here
-}
+// function createCityButtons() {
+//   const searchCity = document.createElement('button');
+//  //city name here
+// }
 
 
-
+window.addEventListener('load', renderFromLocalStorage);
 
 renderFromLocalStorage();
 saveToLocalStorage();
@@ -209,3 +218,13 @@ saveToLocalStorage();
 //5. create cards for 5 day forecast and append to html
 //6. function to render the list
 // 7. ready function
+
+
+
+//Add City Buttons: wont display on page load or after search button without a refresh action. It's displaying double buttons for what has been inputted. Each refresh is causing null to be saved in local storage
+
+//Need buttons to display the correct city data to the right.
+
+//styling everything
+
+//clear weather data from being rendered when searching for a new city. 
