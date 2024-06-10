@@ -2,7 +2,7 @@ const button = document.querySelector('#search-btn')
 const todayBox = document.querySelector('#today-content')
 const forecastBox = document.querySelector('#forecast-content')
 const errorText = document.querySelector('.error')
-// const emojiItem = document.querySelector('#emoji-item')
+
 
 const searchHistoryList = document.querySelector('#search-history')
 
@@ -47,63 +47,126 @@ function fetchWeatherData() {
       .then(response => response.json())
       .then(data => {    
         console.log(data);
-      //   if (!data || !data.results || data.results.length === 0) {
-      //     console.log('No Results returned!')
-      //     return;
-      // }
+
+
+        createTodayCard(data);
       createForecastCards(data);
-      createTodayCard(data);
-// for (let i=1; i< 6; i++){
-//   if (data[i])
-// }
-      // data.results.forEach(function(answer) {
-      //     createTodayCard(answer);
-      // })
+
+
       })
   }
-function saveToLocalStorage () {
-  //when clicking
+function saveToLocalStorage (city) {
+  let cities = JSON.parse(localStorage.getItem('cities')) || [];
+cities.push(city);
+localStorage.setItem('cities', JSON.stringify(cities));
 }
-function readFromLocalStorage() {
-  //at ready
+function renderFromLocalStorage() {
+  const searchHistoryList = document.querySelector('#search-history');
+  const cities = JSON.parse(localStorage.getItem('cities')) || [];
+  cities.forEach((city) => {
+    const cityButton= document.createElement('button');
+    cityButton.textContent = city;
+    cityButton.addEventListener('click', () => {
+      fetchWeatherData(city);
+    });
+    searchHistoryList.appendChild(cityButton);
+    cityButton.addEventListener('click', () => {
+      fetchWeatherData(city);
+    });
+  });
+
 }
 function createTodayCard(data) {
+  const todayBox = document.querySelector('.today-box');
+  let emojiSymbol= '';
+    if (data.list[0].weather[0].description=== 'broken clouds') {
+      emojiSymbol = '🌤️'}
+      else if (data.list[0].weather[0].description=== 'clear sky') {
+        emojiSymbol= '☀️'
+      } else if (data.list[0].weather[0].description=== 'few clouds') {
+        emojiSymbol= '🌤️'
+      }
+      else if (data.list[0].weather[0].description=== 'overcast clouds'){
+        emojiSymbol= '☁️'
+      }
+      else if (data.list[0].weather[0].description=== 'scattered clouds'){
+        emojiSymbol= '🌤️'
+      }
+      else if (data.list[0].weather[0].description=== 'light rain'){
+        emojiSymbol= '🌧️'
+      }
+      else{
+        emojiSymbol= 'unknown'
+      }
+
   const todayCard = document.createElement('div');
   todayCard.classList.add('today-card');
-
+  todayBox.appendChild(todayCard);
   const todayCity = document.createElement('h3');
-  todayCity.textContent = data.city.name + data.list[0].dt_txt;
-  //add date here too as well as emoji for sun/cloud/rain
+  todayCity.textContent = data.city.name + data.list[0].dt_txt + emojiSymbol;
+
 
   todayCard.append(todayCity);
 
   const todayTemp = document.createElement('p');
-  todayTemp.textContent= data.list[0].main.temp_max;
+  todayTemp.textContent= `Temp: ${data.list[0].main.temp_max}°F`;
 
 
   const todayWind = document.createElement('p');
-  todayWind.textContent = data.list[0].wind.speed;
+  todayWind.textContent = `Wind: ${data.list[0].wind.speed} mph`;
 
   const todayHumidity = document.createElement('p');
-  todayHumidity.textContent = data.list[0].main.humidity;
+  todayHumidity.textContent = `Humidity: ${data.list[0].main.humidity} %`;
+
+
 
   todayCard.appendChild(todayTemp);
   todayCard.appendChild(todayWind);
   todayCard.appendChild(todayHumidity);
 
-  todayBox.appendChild(todayCard);
+
 }
 function createForecastCards(data) {
 
+  const searchInputValue = document.querySelector('.inputValue').value;
+  const forecastBox = document.querySelector('.forecast-box')
+  if (searchInputValue) {
+    const forecastHeader = document.createElement('h4');
+    forecastHeader.classList.add('forecast-box');
+    forecastHeader.id = 'forecast-content';
+    forecastHeader.textContent = `5-Day Forecast in ${searchInputValue}`;    forecastBox.appendChild(forecastHeader);
+
+  }
 
   for (let i=5; i < data.list.length; i+=8){
     const forecastCard = document.createElement('div');
     forecastCard.classList.add('forecast-card');
-  
+    
+    let emojiSymbol= '';
+    if (data.list[i].weather[0].description=== 'broken clouds') {
+      emojiSymbol = '🌤️'}
+      else if (data.list[i].weather[0].description=== 'clear sky') {
+        emojiSymbol= '☀️'
+      } else if (data.list[i].weather[0].description=== 'few clouds') {
+        emojiSymbol= '🌤️'
+      }
+      else if (data.list[i].weather[0].description=== 'overcast clouds'){
+        emojiSymbol= '☁️'
+      }
+      else if (data.list[i].weather[0].description=== 'scattered clouds'){
+        emojiSymbol= '🌤️'
+      }
+      else if (data.list[i].weather[0].description=== 'light rain'){
+        emojiSymbol= '🌧️'
+      }
+      else{
+        emojiSymbol= 'unknown'
+      }
+
     const forecastDescription = document.createElement('h5');
-    forecastDescription.textContent = data.list[i].dt_txt+data.list[i].weather[0].description;
-    //add date here too as well as emoji for sun/cloud/rain add a if statement that creates emojis
-  
+    forecastDescription.textContent = data.list[i].dt_txt+emojiSymbol;
+
+   forecastBox.appendChild(forecastCard);
     forecastCard.append(forecastDescription);
   
     const forecastTemp = document.createElement('p');
@@ -119,6 +182,9 @@ function createForecastCards(data) {
     forecastCard.appendChild(forecastWind);
     forecastCard.appendChild(forecastHumidity);
   
+
+
+
     forecastBox.appendChild(forecastCard);
   }
   
@@ -130,6 +196,12 @@ function createCityButtons() {
   const searchCity = document.createElement('button');
  //city name here
 }
+
+
+
+
+renderFromLocalStorage();
+saveToLocalStorage();
 //1. fetch data from API
 //2. save data items to local storage
 //3. read data items from local storage
